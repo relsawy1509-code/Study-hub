@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Study Hub</title>
+<style>
+:root{--bg1:#0a0f24;--bg2:#1b1340;--text:#f5f7ff;--muted:#a3aed0;--card:rgba(255,255,255,.07);--line:rgba(255,255,255,.14);--accent:#22d3ee;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg1:#eef2ff;--bg2:#fdf0f6;--text:#16203d;--muted:#5d6a8c;--card:rgba(255,255,255,.8);--line:rgba(22,32,61,.14)}}
+:root[data-theme="light"]{--bg1:#eef2ff;--bg2:#fdf0f6;--text:#16203d;--muted:#5d6a8c;--card:rgba(255,255,255,.8);--line:rgba(22,32,61,.14)}
+:root[data-theme="dark"]{--bg1:#0a0f24;--bg2:#1b1340;--text:#f5f7ff;--muted:#a3aed0;--card:rgba(255,255,255,.07);--line:rgba(255,255,255,.14)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--text);background:linear-gradient(160deg,var(--bg1),var(--bg2))}
+body::before,body::after{content:"";position:fixed;width:420px;height:420px;border-radius:50%;opacity:.22;z-index:0;pointer-events:none;background:radial-gradient(circle,var(--accent),transparent 70%)}
+body::before{top:-120px;left:-120px}
+body::after{bottom:40px;right:-160px}
+.app{position:relative;z-index:1;max-width:520px;margin:0 auto;padding:22px 18px 110px}
+h1{font-size:26px;font-weight:600;margin:0 0 4px}
+.sub{color:var(--muted);font-size:14px;margin-bottom:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:12px}
+.tab{display:none}.tab.on{display:block;animation:in .35s ease}
+@keyframes in{from{opacity:0;transform:translateY(8px)}}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:5;display:flex;justify-content:center;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px))}
+nav div{display:flex;gap:6px;background:var(--bg2);border:1px solid var(--line);border-radius:26px;padding:6px;width:100%;max-width:420px}
+nav button{flex:1;padding:11px 0;border:0;border-radius:20px;background:transparent;color:var(--muted);font-size:14px;font-weight:600;cursor:pointer}
+nav button.on{background:var(--accent);color:#0b1020;box-shadow:0 0 18px var(--accent)}
+input,textarea{width:100%;background:transparent;border:1px solid var(--line);border-radius:12px;padding:12px;color:var(--text);font:inherit;font-size:16px;outline:none}
+input:focus,textarea:focus{border-color:var(--accent)}
+.row{display:flex;gap:8px}
+.btn{border:0;border-radius:14px;padding:12px 16px;font-weight:600;font-size:15px;cursor:pointer;background:var(--accent);color:#0b1020;box-shadow:0 0 16px color-mix(in srgb,var(--accent) 60%,transparent)}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--line);box-shadow:none}
+.ex{display:flex;align-items:center;gap:14px}
+.days{min-width:72px;text-align:center}
+.days b{display:block;font-size:34px;font-weight:300;line-height:1}
+.days span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.ex .info{flex:1;min-width:0}.ex .info b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar{height:6px;border-radius:6px;background:var(--line);margin-top:8px;overflow:hidden}.bar i{display:block;height:100%;border-radius:6px}
+.x{background:none;border:0;color:var(--muted);font-size:20px;cursor:pointer}
+.ring{position:relative;width:min(70vw,260px);aspect-ratio:1;margin:8px auto 18px}
+.ring svg{width:100%;height:100%;overflow:visible}
+.ring .mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.time{font-size:clamp(46px,15vw,64px);font-weight:200;font-variant-numeric:tabular-nums}
+.stats{display:flex;justify-content:space-around;text-align:center}
+.stats b{display:block;font-size:22px}.stats span{font-size:12px;color:var(--muted)}
+.fc{perspective:900px;height:210px;margin:6px 0 14px}
+.fc .in{position:relative;width:100%;height:100%;transition:transform .55s;transform-style:preserve-3d;cursor:pointer}
+.fc.flip .in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;align-items:center;justify-content:center;text-align:center;padding:22px;font-size:20px;border-radius:22px;border:1px solid var(--line);background:var(--card);box-shadow:0 0 30px color-mix(in srgb,var(--accent) 35%,transparent)}
+.face.b{transform:rotateY(180deg);border-color:var(--accent)}
+.hint{text-align:center;color:var(--muted);font-size:13px;margin-bottom:12px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<section class="tab on" id="t-ex" data-accent="#fb923c">
+  <h1>Exam countdown</h1><div class="sub">Know exactly how long you have.</div>
+  <div class="card"><input id="en" placeholder="Exam name" maxlength="40" style="margin-bottom:8px">
+    <div class="row"><input id="ed" type="date"><button class="btn" id="ea">Add</button></div></div>
+  <div id="exl"></div>
+</section>
+
+<section class="tab" id="t-fo" data-accent="#22d3ee">
+  <h1>Focus timer</h1><div class="sub">25 minutes on, 5 minutes off.</div>
+  <div class="ring">
+    <svg viewBox="0 0 240 240"><circle cx="120" cy="120" r="104" fill="none" stroke="var(--line)" stroke-width="10"/>
+    <circle id="pr" cx="120" cy="120" r="104" fill="none" stroke="var(--accent)" stroke-width="10" stroke-linecap="round" stroke-dasharray="653.5" stroke-dashoffset="0" transform="rotate(-90 120 120)" style="filter:drop-shadow(0 0 10px var(--accent))"/></svg>
+    <div class="mid"><div class="time" id="tm">25:00</div><div class="sub" id="md" style="margin:0">Focus</div></div>
+  </div>
+  <div class="row" style="justify-content:center;margin-bottom:16px"><button class="btn" id="go">Start</button><button class="btn ghost" id="rs">Reset</button><button class="btn ghost" id="sw">Switch</button></div>
+  <div class="card stats"><div><b id="ss">0</b><span>Sessions today</span></div><div><b id="sm">0</b><span>Focus minutes</span></div></div>
+</section>
+
+<section class="tab" id="t-fc" data-accent="#f472b6">
+  <h1>Flashcards</h1><div class="sub">One card per line: question | answer</div>
+  <div id="edit">
+    <textarea id="deck" rows="7"></textarea>
+    <div class="row" style="margin-top:10px"><button class="btn" id="st">Start studying</button></div>
+  </div>
+  <div id="study" style="display:none">
+    <div class="hint" id="left"></div>
+    <div class="fc" id="fc"><div class="in"><div class="face" id="fq"></div><div class="face b" id="fa"></div></div></div>
+    <div class="row"><button class="btn ghost" id="ag" style="flex:1">Again</button><button class="btn" id="ok" style="flex:1">Got it</button></div>
+    <div class="row" style="margin-top:10px"><button class="btn ghost" id="bk" style="flex:1">Edit deck</button></div>
+  </div>
+</section>
+
+</div>
+<nav><div><button class="on" data-t="t-ex">Exams</button><button data-t="t-fo">Focus</button><button data-t="t-fc">Cards</button></div></nav>
+<script>
+var $=function(i){return document.getElementById(i)};
+function ld(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function esc(s){return s.replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+
+/* tabs */
+function show(id){
+  document.querySelectorAll(".tab").forEach(function(t){t.classList.toggle("on",t.id===id)});
+  document.querySelectorAll("nav button").forEach(function(b){b.classList.toggle("on",b.dataset.t===id)});
+  var a=$(id).dataset.accent;if(id==="t-ex")a=urgentColor();
+  document.documentElement.style.setProperty("--accent",a);
+}
+document.querySelectorAll("nav button").forEach(function(b){b.addEventListener("click",function(){show(b.dataset.t)})});
+
+/* exams */
+var exams=ld("sh_exams",[]);
+function daysLeft(d){var t=new Date();t.setHours(0,0,0,0);var e=new Date(d+"T00:00:00");return Math.round((e-t)/864e5)}
+function col(n){return n<0?"#94a3b8":n<=2?"#ef4444":n<=6?"#fb923c":n<=14?"#fbbf24":"#34d399"}
+function urgentColor(){var m=null;exams.forEach(function(e){var n=daysLeft(e.d);if(n>=0&&(m===null||n<m))m=n});return m===null?"#fb923c":col(m)}
+function drawEx(){
+  exams.sort(function(a,b){return a.d<b.d?-1:1});
+  var h="";
+  if(!exams.length)h='<div class="card sub" style="text-align:center;margin:0">Add your first exam above.</div>';
+  exams.forEach(function(e,i){var n=daysLeft(e.d),c=col(n),pct=n<0?100:Math.max(6,100-Math.min(n,30)/30*94);
+    h+='<div class="card ex"><div class="days"><b style="color:'+c+';text-shadow:0 0 18px '+c+'">'+(n<0?"✓":n)+'</b><span>'+(n<0?"done":n===1?"day left":"days left")+'</span></div><div class="info"><b>'+esc(e.n)+'</b><span class="sub" style="margin:0">'+new Date(e.d+"T00:00:00").toDateString()+'</span><div class="bar"><i style="width:'+pct+'%;background:'+c+'"></i></div></div><button class="x" data-i="'+i+'" aria-label="Delete">×</button></div>'});
+  $("exl").innerHTML=h;
+  $("exl").querySelectorAll(".x").forEach(function(b){b.addEventListener("click",function(){exams.splice(+b.dataset.i,1);sv("sh_exams",exams);drawEx();if($("t-ex").classList.contains("on"))show("t-ex")})});
+}
+$("ea").addEventListener("click",function(){var n=$("en").value.trim(),d=$("ed").value;if(!n||!d)return;exams.push({n:n,d:d});sv("sh_exams",exams);$("en").value="";$("ed").value="";drawEx();show("t-ex")});
+
+/* focus timer */
+var mode="f",len={f:1500,b:300},rem=1500,run=false,endAt=0,iv=null,today=new Date().toDateString(),st=ld("sh_focus",{day:today,s:0,m:0});
+if(st.day!==today)st={day:today,s:0,m:0};
+function fmt(s){var m=Math.floor(s/60),r=s%60;return(m<10?"0":"")+m+":"+(r<10?"0":"")+r}
+function drawT(){$("tm").textContent=fmt(rem);$("md").textContent=mode==="f"?"Focus":"Break";$("pr").setAttribute("stroke-dashoffset",653.5*(1-rem/len[mode]));$("ss").textContent=st.s;$("sm").textContent=st.m;$("go").textContent=run?"Pause":"Start";document.title=run?fmt(rem)+" · Study Hub":"Study Hub"}
+function beep(){try{var a=new (window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=880;g.gain.setValueAtTime(.2,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.8);o.start();o.stop(a.currentTime+.8)}catch(e){}}
+function tick(){rem=Math.max(0,Math.round((endAt-Date.now())/1000));if(rem<=0){clearInterval(iv);run=false;beep();if(mode==="f"){st.s++;st.m+=25;sv("sh_focus",st)}mode=mode==="f"?"b":"f";rem=len[mode]}drawT()}
+$("go").addEventListener("click",function(){if(run){run=false;clearInterval(iv)}else{run=true;endAt=Date.now()+rem*1000;iv=setInterval(tick,250)}drawT()});
+$("rs").addEventListener("click",function(){run=false;clearInterval(iv);rem=len[mode];drawT()});
+$("sw").addEventListener("click",function(){run=false;clearInterval(iv);mode=mode==="f"?"b":"f";rem=len[mode];drawT()});
+
+/* flashcards */
+var sample="What is the capital of Qatar? | Doha\nWhat is 7 × 8? | 56\nWhat does CPU stand for? | Central Processing Unit\nWhat is the powerhouse of the cell? | The mitochondria";
+$("deck").value=ld("sh_deck",sample);
+var q=[],cur=null;
+function next(){if(!q.length){$("study").style.display="none";$("edit").style.display="block";$("fc").classList.remove("flip");alert("Deck complete! 🎉");return}
+  cur=q[0];$("fc").classList.remove("flip");$("fq").textContent=cur.q;$("fa").textContent=cur.a;$("left").textContent=q.length+" left · tap card to flip"}
+$("st").addEventListener("click",function(){var raw=$("deck").value;sv("sh_deck",raw);q=[];raw.split("\n").forEach(function(l){var p=l.split("|");if(p.length>=2&&p[0].trim())q.push({q:p[0].trim(),a:p.slice(1).join("|").trim()})});
+  if(!q.length)return;q.sort(function(){return Math.random()-.5});$("edit").style.display="none";$("study").style.display="block";next()});
+$("fc").addEventListener("click",function(){$("fc").classList.toggle("flip")});
+$("ok").addEventListener("click",function(){q.shift();next()});
+$("ag").addEventListener("click",function(){q.push(q.shift());next()});
+$("bk").addEventListener("click",function(){$("study").style.display="none";$("edit").style.display="block"});
+
+drawEx();drawT();show("t-ex");
+setInterval(function(){if($("t-ex").classList.contains("on"))drawEx()},3600000);
+</script>
+</body>
+</html>
